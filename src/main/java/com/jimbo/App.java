@@ -13,7 +13,7 @@ public class App extends AbstractVerticle
     			r.response()
     				.end("<h1>Hello there.... General Kenobi :v</h1>");
     		})
-    		.listen(8080, result -> {
+    		.listen(config().getInteger("HTTP_PORT", 8080), result -> {
     			if (result.succeeded()) {
     				fut.complete();
     			} else {

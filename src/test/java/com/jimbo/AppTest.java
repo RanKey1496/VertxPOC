@@ -1,11 +1,15 @@
 package com.jimbo;
 
+import java.net.ServerSocket;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -14,11 +18,20 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 public class AppTest {
 
 	private Vertx vertx;
+	private int port = 8081;
 	
 	@Before
 	public void setUp(TestContext context) {
-		vertx = Vertx.vertx();
-		vertx.deployVerticle(App.class.getName(), context.asyncAssertSuccess());
+		try {
+			ServerSocket socket = new ServerSocket(0);
+			port = socket.getLocalPort();
+			socket.close();
+			vertx = Vertx.vertx();
+			DeploymentOptions options = new DeploymentOptions().setConfig(new JsonObject().put("HTTP_PORT", port));
+			vertx.deployVerticle(App.class.getName(), options, context.asyncAssertSuccess());
+		} catch (Exception e) {
+			System.out.println("Se jodió :v" + e.getMessage());
+		}
 	}
 	
 	@After
@@ -30,7 +43,7 @@ public class AppTest {
 	public void testMyApp(TestContext context) {
 		final Async async = context.async();
 		
-		vertx.createHttpClient().getNow(8080, "localhost", "/", response -> {
+		vertx.createHttpClient().getNow(port, "localhost", "/", response -> {
 			response.handler(body -> {
 				context.assertTrue(body.toString().contains("Hello there"));
 				async.complete();
