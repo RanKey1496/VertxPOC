@@ -23,6 +23,7 @@ public class AppTest {
 	@Before
 	public void setUp(TestContext context) {
 		try {
+<<<<<<< HEAD
 			ServerSocket socket = new ServerSocket(0);
 			port = socket.getLocalPort();
 			socket.close();
@@ -31,6 +32,16 @@ public class AppTest {
 			vertx.deployVerticle(App.class.getName(), options, context.asyncAssertSuccess());
 		} catch (Exception e) {
 			System.out.println("Se jodió :v" + e.getMessage());
+=======
+			vertx = Vertx.vertx();
+			ServerSocket socket = new ServerSocket(0);
+			port = socket.getLocalPort();
+			socket.close();
+			DeploymentOptions options = new DeploymentOptions().setConfig(new JsonObject().put("HTTP_PORT", port));
+			vertx.deployVerticle(App.class.getName(), options, context.asyncAssertSuccess());
+		} catch (Exception e) {
+			System.out.println("Error testing: " + e.getMessage());
+>>>>>>> 81f486647d164a5651a860d691a4500cefe6585e
 		}
 	}
 	
